@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="Amritsari Brothers — tandoor and kulchas">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB199"/>
+      <stop offset="1" stop-color="#B9372E"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="660" cy="90" r="150" fill="#ffffff" opacity="0.10"/>
+  <circle cx="120" cy="430" r="190" fill="#ffffff" opacity="0.08"/>
+  <circle cx="400" cy="235" r="130" fill="#ffffff" opacity="0.30"/>
+  <text x="400" y="310" font-family="Segoe UI Emoji, Noto Color Emoji, Apple Color Emoji, sans-serif" font-size="150" text-anchor="middle">🍗</text>
+  <text x="400" y="450" font-family="Poppins, Segoe UI, sans-serif" font-size="26" font-weight="600" letter-spacing="2" fill="#ffffff" opacity="0.9" text-anchor="middle">TANDOOR &amp; KULCHAS</text>
+</svg>
