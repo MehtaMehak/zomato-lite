@@ -26,3 +26,4 @@ Thumbs.db
 # Test coverage / TypeScript build info
 coverage/
 *.tsbuildinfo
+.vercel
