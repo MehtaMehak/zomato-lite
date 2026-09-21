@@ -5,12 +5,13 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "node --watch index.js",
-    "start": "node index.js",
-    "seed": "node seed.js"
+    "dev": "node --env-file-if-exists=../.env --watch index.js",
+    "start": "node --env-file-if-exists=../.env index.js",
+    "seed": "node --env-file-if-exists=../.env seed.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "pg": "^8.23.0"
   }
 }

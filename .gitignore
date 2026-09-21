@@ -1,8 +1,28 @@
-node_modules/
-dist/
-server/data/
-*.log
+# Secrets / environment
 .env
 .env.*
-!.env.example
+
+# Dependencies
+node_modules/
+client/node_modules/
+
+# Build output
+client/dist/
+
+# Local database/data files
+server/data/
+
+# Logs
+*.log
+
+# Editors / IDEs
+.vscode/
+.idea/
+
+# OS cruft
 .DS_Store
+Thumbs.db
+
+# Test coverage / TypeScript build info
+coverage/
+*.tsbuildinfo

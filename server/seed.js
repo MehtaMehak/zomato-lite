@@ -1,4 +1,6 @@
-import { db, createRestaurant, addReview } from './db.js';
+// DB_DRIVER=postgres → Neon (server/pgdb.js); anything else → SQLite (default).
+const IS_POSTGRES = process.env.DB_DRIVER === 'postgres';
+const db = await import(IS_POSTGRES ? './pgdb.js' : './db.js');
 
 // ---------------------------------------------------------------------------
 // Fictional demo data for a Delhi-based discovery app.
@@ -158,19 +160,44 @@ const RESTAURANTS = [
   },
 ];
 
-const existing = db.prepare('SELECT COUNT(*) AS c FROM restaurants').get().c;
-if (existing > 0) {
-  console.log(`Clearing ${existing} existing restaurant(s) to load the Delhi demo set.`);
-  db.exec('DELETE FROM restaurants'); // reviews cascade via foreign key
-}
+async function main() {
+  console.log(`Seeding the Delhi demo set into ${IS_POSTGRES ? 'PostgreSQL (Neon)' : 'SQLite'}…`);
 
-for (const { restaurant, reviews } of RESTAURANTS) {
-  const created = createRestaurant(restaurant);
-  for (const review of reviews) {
-    addReview(created.id, review);
+  if (IS_POSTGRES) {
+    await db.initDatabase();
+    // TRUNCATE RESTART IDENTITY resets identity sequences so seeded ids stay
+    // 1..8, matching the numbering SQLite produces after a fresh seed.
+    await db.pool.query('TRUNCATE TABLE reviews, restaurants RESTART IDENTITY CASCADE');
+  } else {
+    const existing = db.db.prepare('SELECT COUNT(*) AS c FROM restaurants').get().c;
+    if (existing > 0) {
+      console.log(`Clearing ${existing} existing restaurant(s) to load the Delhi demo set.`);
+      db.db.exec('DELETE FROM restaurants'); // reviews cascade via foreign key
+    }
   }
-  console.log(`Seeded "${created.name}" (${restaurant.cuisine}, ${restaurant.neighbourhood}) with ${reviews.length} review(s).`);
+
+  for (const { restaurant, reviews } of RESTAURANTS) {
+    const created = await db.createRestaurant(restaurant);
+    for (const review of reviews) {
+      await db.addReview(created.id, review);
+    }
+    console.log(`Seeded "${created.name}" (${restaurant.cuisine}, ${restaurant.neighbourhood}) with ${reviews.length} review(s).`);
+  }
+
+  let reviewCount;
+  if (IS_POSTGRES) {
+    const { rows } = await db.pool.query('SELECT COUNT(*)::int AS c FROM reviews');
+    reviewCount = rows[0].c;
+    await db.pool.end();
+  } else {
+    reviewCount = db.db.prepare('SELECT COUNT(*) AS c FROM reviews').get().c;
+  }
+
+  console.log(`Done — ${RESTAURANTS.length} fictional Delhi restaurants, ${reviewCount} reviews.`);
+  console.log('Start the app with `npm run dev`.');
 }
 
-console.log(`Done — ${RESTAURANTS.length} fictional Delhi restaurants, ${db.prepare('SELECT COUNT(*) AS c FROM reviews').get().c} reviews.`);
-console.log('Start the app with `npm run dev`.');
+main().catch((err) => {
+  console.error('Seeding failed:', err.message);
+  process.exit(1);
+});
