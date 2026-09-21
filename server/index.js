@@ -83,6 +83,11 @@ async function main() {
     // PostgreSQL bootstrap; the SQLite backend bootstraps itself on import.
     await db.initDatabase();
   }
+
+  // Vercel imports this module as a serverless function and routes requests to
+  // the exported app — binding a listening socket is not supported there.
+  if (process.env.VERCEL === '1') return;
+
   app.listen(PORT, () => {
     console.log(`Zomato Lite API listening on http://localhost:${PORT} (${isPostgres ? 'postgres' : 'sqlite'})`);
   });
@@ -92,3 +97,6 @@ main().catch((err) => {
   console.error('Server failed to start:', err.message);
   process.exit(1);
 });
+
+// Vercel's Node runtime uses the default export as the request handler.
+export default app;

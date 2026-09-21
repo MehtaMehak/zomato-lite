@@ -1,0 +1,21 @@
+{
+  "buildCommand": "npm run build -w client",
+  "outputDirectory": "client/dist",
+  "installCommand": "npm install",
+  "functions": {
+    "server/index.js": {
+      "maxDuration": 30,
+      "includeFiles": "server/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/server"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
